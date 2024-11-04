@@ -1,6 +1,7 @@
 from django.shortcuts import render
-from django.http import HttpResponse , HttpResponseNotFound , HttpResponseRedirect
+from django.http import HttpResponse , HttpResponseNotFound , HttpResponseRedirect , Http404
 from django.urls import reverse
+from django.template.loader import render_to_string
 
 # Create your views here.
 
@@ -38,15 +39,15 @@ dic_monthly_challenges = {
     "january": "Eat no meat entrie month!",
     "february": "Walk at least 30 minutes every days!",
     "march": "Learn Django at least 30 minutes!",
-    "april": "Learn Django at least 30 minutes!",
-    "may": "Learn Django at least 30 minutes!",
+    "april": "Eat no meat entrie month!",
+    "may": "Walk at least 30 minutes every days!",
     "june": "Learn Django at least 30 minutes!",
-    "july": "Learn Django at least 30 minutes!",
-    "august": "Learn Django at least 30 minutes!",
+    "july": "Eat no meat entrie month!",
+    "august": "Walk at least 30 minutes every days!",
     "september": "Learn Django at least 30 minutes!",
-    "october": "Learn Django at least 30 minutes!",
-    "november": "Learn Django at least 30 minutes!",
-    "december": "Learn Django at least 30 minutes!",
+    "october": "Eat no meat entrie month!",
+    "november": "Walk at least 30 minutes every days!",
+    "december": None,
 }
 
 
@@ -71,29 +72,37 @@ def monthly_challenges(request , month):
     try:
         response_text = dic_monthly_challenges[month]
 
-        response_data = f"<h1>{response_text}</h1>"    # 回傳簡易的html格式
-        return HttpResponse(response_data)
-        return HttpResponse(response_text)
+        return render(request, "challenges/challenge.html" , {
+            "month_name" : month.capitalize(),
+            "text" : response_text
+        })
+
+        #response_data = render_to_string("challenges/challenge.html")
+        #return HttpResponse(response_data)
+
     except:   # 回傳找不到此頁面 404
-        return HttpResponseNotFound("This month is not supported! ")
+        raise Http404()    # 自動尋找路徑中的 404.html 文件進行回傳 ， 文件命名必須是 404.html
+
+
+        response_data = render_to_string("404.html")   # 將html轉為字串
+        return HttpResponseNotFound(response_data)
+
+    
+
 
 # 建立首頁，能夠點擊各月份連結就能連接到該月份的網址
 def index(request):
-    items_context = ""
     months = list(dic_monthly_challenges.keys())
 
-    for month in months:
-        month_capitalize = month.capitalize()
-        month_path = reverse("month-challenge" , args=[month])
+    return render(request, "challenges/index.html",{
+        "months": months
+    })
 
-        items_context += f"<li><a href=\"{month_path}\">{month_capitalize}</a></li>"
+    # for month in months:
+    #     month_capitalize = month.capitalize()
+    #     month_path = reverse("month-challenge" , args=[month])
 
-    
-        # <ul>
-        #     <li><a href="">January</a></li>
-        #     ......
-        # </ul>
-    
+    #     items_context += f"<li><a href=\"{month_path}\">{month_capitalize}</a></li>"
 
-    response_data = f"<ul>{items_context}</ul>"
-    return HttpResponse(response_data)
+    # response_data = f"<ul>{items_context}</ul>"
+    # return HttpResponse(response_data)

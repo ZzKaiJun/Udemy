@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% comment %} 
+有 extends 基礎模板後，就不需要每個html都建立類似的程式碼 ，
+只需要告訴 Django 要在哪裡輸入特定的內容，
+利用 block 方法可以讓特定區塊顯示你要的內容
+{% endcomment %}
+{% load static %}
+
+{% block css_files %}
+    <link rel="stylesheet" href="{% static "challenges/challenges.css" %}">
+    <link rel="stylesheet" href="{% static "challenges/includes/header.css" %}">
+{% endblock %}
+
+{% block page_title %}
+    All Challenges
+{% endblock %}
+
+{% block content %}
+
+{% include "challenges/includes/header.html"%}
+    <ul>
+        {% for month in months %}
+            <li><a href="{% url "month-challenge" month  %}">{{ month | title }}</a></li>            
+        {% endfor %}
+    </ul>
+{% endblock %}
+
+
+
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Challenges</title>
+</head>
+<body>
+    <ul>
+        {% for month in months %}
+            <li><a href="{% url "month-challenge" month  %}">{{ month | title }}</a></li>            
+        {% endfor %}
+    </ul>
+</body>
+</html> {% endcomment %}
